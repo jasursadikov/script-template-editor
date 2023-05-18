@@ -1,0 +1,20 @@
+{
+	"name": "com.vmp1r3.script-template-editor",
+	"version": "1.0.0",
+	"displayName": "Script Template Editor",
+	"description": "Customize default Unity templates.",
+	"unity": "2021.1",
+	"dependencies": {},
+	"keywords": [
+		"csharp",
+		"tempate",
+		"editor",
+		"custom",
+		"file"
+	],
+	"author": {
+		"name": "Jasur Sadikov",
+		"email": "jasur@sadikoff.com",
+		"url": "https://github.com/vmp1r3/script-template-editor"
+	}
+}
