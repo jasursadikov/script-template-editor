@@ -63,11 +63,10 @@ namespace vmp1r3.ScriptTemplate.Editor
 					{
 						var style = new GUIStyle(EditorStyles.toolbarButton);
 						style.alignment = TextAnchor.MiddleLeft;
-						style.normal.textColor = template == target ? new Color(0.2f, 0.6f, 1f, 1f) : style.normal.textColor;
-						style.hover.textColor = template == target ? new Color(0.2f, 0.6f, 1f, 1f) : style.hover.textColor;
-						style.active.textColor = template == target ? new Color(0.2f, 0.6f, 1f, 1f) : style.active.textColor;
+						GUI.enabled = template != target;
 						if (GUILayout.Button(EditorGUIUtility.TrTextContentWithIcon(template.Name, string.Empty, template.Icon), style, GUILayout.Width(240)))
 							target = template;
+						GUI.enabled = true;
 					}
 				}
 				EditorGUILayout.EndVertical();
