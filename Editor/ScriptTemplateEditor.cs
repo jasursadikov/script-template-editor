@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.IO;
-using System.Security.Permissions;
-using System.Security.Principal;
 using UnityEditor;
 using UnityEngine;
 
@@ -57,6 +55,7 @@ namespace vmp1r3.ScriptTemplate.Editor
 							}
 
 							target = template;
+							target.Refresh();
 						}
 						GUI.enabled = true;
 					}
@@ -135,14 +134,23 @@ namespace vmp1r3.ScriptTemplate.Editor
 			Process.Start(FileName);
 		}
 
-		[PrincipalPermission(SecurityAction.Demand, Role = @"BUILTIN\Administrators")]
 		public void Save()
 		{
-			WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-			bool administrativeMode = principal.IsInRole(WindowsBuiltInRole.Administrator);
-			UnityEngine.Debug.Log(administrativeMode);
-			File.WriteAllText(FileName, UserEdits);
-			Content = File.ReadAllText(FileName);
+			string scriptPath = @"Assets/Editor/WriteFileAdmin.ps1"; // TODO: Access file from packages
+			string command = $"-ExecutionPolicy Bypass -File \"{Path.Combine(Directory.GetCurrentDirectory(), scriptPath)}\" -FilePath \"{FileName}\" -Content \"{UserEdits}\"";
+
+			Process process = new Process();
+			process.StartInfo.FileName = "powershell.exe";
+			process.StartInfo.Arguments = command;
+			process.StartInfo.Verb = "runas";
+			process.StartInfo.RedirectStandardOutput = true;
+			process.StartInfo.RedirectStandardError = true;
+			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.CreateNoWindow = true;
+			process.Start();
+			process.WaitForExit();
+
+			Content = UserEdits;
 		}
 
 		public void Reset()
@@ -150,6 +158,10 @@ namespace vmp1r3.ScriptTemplate.Editor
 			Content = UserEdits = File.ReadAllText(DefaultFile);
 			Save();
 		}
-	}
 
+		public void Refresh()
+		{
+			UserEdits = Content;
+		}
+	}
 }
