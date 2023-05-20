@@ -1,57 +1,15 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
+using System.Security.Principal;
 using UnityEditor;
 using UnityEngine;
 
+#pragma warning disable CS0618
+
 namespace vmp1r3.ScriptTemplate.Editor
 {
-	public sealed class Template
-	{
-		public Template(string icon, string name, string fileName)
-		{
-			Icon = icon;
-			Name = name;
-			FileName = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), @"Data\Resources\ScriptTemplates", fileName);
-			DefaultFile = Path.Combine(@"%APPDATA%\Unity\com.vmp1r3.script-template-editor\bak", fileName);
-			Content = File.ReadAllText(FileName);
-			UserEdits = Content;
-			
-			if (File.Exists(DefaultFile))
-				return;
-			
-			if (!Directory.Exists(Path.GetDirectoryName(DefaultFile)))
-				Directory.CreateDirectory(Path.GetDirectoryName(DefaultFile));
-
-			File.WriteAllText(DefaultFile, Content);
-		}
-
-		public string Icon { get; }
-		public string Name { get; }
-		public string FileName { get; }
-		public string DefaultFile { get; }
-		public string Content { get; set; }
-		public string UserEdits { get; set; }
-		public bool IsDirty => Content != UserEdits;
-		
-		public void Open()
-		{
-			Process.Start(FileName);
-		}
-		[PrincipalPermission(SecurityAction.Demand, Role = @"BUILTIN\Administrators")]
-		public void Save()
-		{	
-			File.WriteAllText(FileName, UserEdits);
-			Content = File.ReadAllText(FileName);
-		}
-		public void Reset()
-		{
-			Content = UserEdits = File.ReadAllText(DefaultFile);
-			Save();
-		}
-	}
-
-	public static class ScriptTemplateEditorWindow
+	public static class ScriptTemplateEditor
 	{
 		private static readonly Template[] templates = new Template[]
 		{
@@ -143,4 +101,55 @@ namespace vmp1r3.ScriptTemplate.Editor
 			GUILayout.EndHorizontal();
 		}
 	}
+
+	public sealed class Template
+	{
+		public Template(string icon, string name, string fileName)
+		{
+			Icon = icon;
+			Name = name;
+			FileName = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), @"Data\Resources\ScriptTemplates", fileName);
+			DefaultFile = Path.Combine(@"%APPDATA%\Unity\com.vmp1r3.script-template-editor\bak", fileName);
+			Content = File.ReadAllText(FileName);
+			UserEdits = Content;
+
+			if (File.Exists(DefaultFile))
+				return;
+
+			if (!Directory.Exists(Path.GetDirectoryName(DefaultFile)))
+				Directory.CreateDirectory(Path.GetDirectoryName(DefaultFile));
+
+			File.WriteAllText(DefaultFile, Content);
+		}
+
+		public string Icon { get; }
+		public string Name { get; }
+		public string FileName { get; }
+		public string DefaultFile { get; }
+		public string Content { get; set; }
+		public string UserEdits { get; set; }
+		public bool IsDirty => Content != UserEdits;
+
+		public void Open()
+		{
+			Process.Start(FileName);
+		}
+
+		[PrincipalPermission(SecurityAction.Demand, Role = @"BUILTIN\Administrators")]
+		public void Save()
+		{
+			WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+			bool administrativeMode = principal.IsInRole(WindowsBuiltInRole.Administrator);
+			UnityEngine.Debug.Log(administrativeMode);
+			File.WriteAllText(FileName, UserEdits);
+			Content = File.ReadAllText(FileName);
+		}
+
+		public void Reset()
+		{
+			Content = UserEdits = File.ReadAllText(DefaultFile);
+			Save();
+		}
+	}
+
 }
