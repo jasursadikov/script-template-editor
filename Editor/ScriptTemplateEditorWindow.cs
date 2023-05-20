@@ -22,6 +22,7 @@ namespace vmp1r3.ScriptTemplate.Editor
 		public string Path { get; }
 		public string Content { get; }
 		public string UserEdits { get; set; }
+		public bool IsDirty => Content != UserEdits;
 
 		[PrincipalPermission(SecurityAction.Demand, Role = @"BUILTIN\Administrators")]
 		public void Save() => File.WriteAllText(Path, UserEdits);
@@ -63,9 +64,20 @@ namespace vmp1r3.ScriptTemplate.Editor
 					{
 						var style = new GUIStyle(EditorStyles.toolbarButton);
 						style.alignment = TextAnchor.MiddleLeft;
+						style.normal.textColor = template == target ? Color.white : style.normal.textColor;
 						GUI.enabled = template != target;
 						if (GUILayout.Button(EditorGUIUtility.TrTextContentWithIcon(template.Name, string.Empty, template.Icon), style, GUILayout.Width(240)))
+						{
+							if (target != null && target != template && target.IsDirty)
+							{
+								if (EditorUtility.DisplayDialog($"{target.Name} edited", $"Do you want to save changes in {target.Name}", "Yes", "No"))
+									target.Save();
+								else
+									target.UserEdits = target.Content;
+							}
+
 							target = template;
+						}
 						GUI.enabled = true;
 					}
 				}
@@ -86,7 +98,7 @@ namespace vmp1r3.ScriptTemplate.Editor
 								if (GUILayout.Button("Open...", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
 									target.Open();
 
-								GUI.enabled = target.UserEdits != target.Content;
+								GUI.enabled = target.IsDirty;
 								if (GUILayout.Button("Save", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
 									target.Save();
 								GUI.enabled = true;
