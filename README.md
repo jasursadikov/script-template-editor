@@ -24,3 +24,5 @@ To customize your script templates, go to **"Edit/Preferences/Script Templates"*
 ## How does it work?
 
 In Unity you have your default templates in Unity editor folder. To override them, this package does use powershell script to replace the content of your previous script template.
+
+Templates are changed only for one installation, you should apply your edits for each Unity version you have on your machine.
