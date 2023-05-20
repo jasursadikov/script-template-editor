@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using UnityEditor;
@@ -9,6 +10,8 @@ namespace vmp1r3.ScriptTemplate.Editor
 {
 	public static class ScriptTemplateEditor
 	{
+		public static TextAsset powershellScript;
+
 		private static readonly Template[] templates = new Template[]
 		{
 			new Template("cs Script Icon", "C# Script", "81-C# Script-NewBehaviourScript.cs.txt"),
@@ -108,7 +111,7 @@ namespace vmp1r3.ScriptTemplate.Editor
 			Icon = icon;
 			Name = name;
 			FileName = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), @"Data\Resources\ScriptTemplates", fileName);
-			DefaultFile = Path.Combine(@"%APPDATA%\Unity\com.vmp1r3.script-template-editor\bak", fileName);
+			DefaultFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Unity\com.vmp1r3.script-template-editor\bak", fileName);
 			Content = File.ReadAllText(FileName);
 			UserEdits = Content;
 
@@ -137,16 +140,22 @@ namespace vmp1r3.ScriptTemplate.Editor
 		public void Save()
 		{
 			string scriptPath = @"Assets/Editor/WriteFileAdmin.ps1"; // TODO: Access file from packages
-			string command = $"-ExecutionPolicy Bypass -File \"{Path.Combine(Directory.GetCurrentDirectory(), scriptPath)}\" -FilePath \"{FileName}\" -Content \"{UserEdits}\"";
+			string command = $"-WindowStyle hidden -ExecutionPolicy Bypass -File \"{Path.Combine(Directory.GetCurrentDirectory(), scriptPath)}\" -FilePath \"{FileName}\" -Content \"{UserEdits}\"";
 
-			Process process = new Process();
-			process.StartInfo.FileName = "powershell.exe";
-			process.StartInfo.Arguments = command;
-			process.StartInfo.Verb = "runas";
-			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.RedirectStandardError = true;
-			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.CreateNoWindow = true;
+			Process process = new()
+			{
+				StartInfo = new(scriptPath)
+				{
+					FileName = "powershell.exe",
+					Arguments = command,
+					Verb = "runas",
+					RedirectStandardOutput = true,
+					RedirectStandardError = true,
+					UseShellExecute = false,
+					CreateNoWindow = true
+				}
+			};
+
 			process.Start();
 			process.WaitForExit();
 
