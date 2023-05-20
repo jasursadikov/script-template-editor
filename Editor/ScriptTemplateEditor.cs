@@ -139,8 +139,8 @@ namespace vmp1r3.ScriptTemplate.Editor
 
 		public void Save()
 		{
-			string scriptPath = @"Assets/Editor/WriteFileAdmin.ps1"; // TODO: Access file from packages
-			string command = $"-WindowStyle hidden -ExecutionPolicy Bypass -File \"{Path.Combine(Directory.GetCurrentDirectory(), scriptPath)}\" -FilePath \"{FileName}\" -Content \"{UserEdits}\"";
+			string scriptPath = FileUtil.GetPhysicalPath(@"Packages\com.vmp1r3.script-template-editor\Editor\WriteFileAdmin.ps1");
+			string command = $"-WindowStyle hidden -ExecutionPolicy Bypass -File \"{scriptPath}\" -FilePath \"{FileName}\" -Content \"{UserEdits}\"";
 
 			Process process = new()
 			{
