@@ -8,25 +8,47 @@ namespace vmp1r3.ScriptTemplate.Editor
 {
 	public sealed class Template
 	{
-		public Template(string icon, string name, string path)
+		public Template(string icon, string name, string fileName)
 		{
 			Icon = icon;
 			Name = name;
-			Path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(EditorApplication.applicationPath), "Data/Resources/ScriptTemplates", path);
-			Content = File.ReadAllText(Path);
+			FileName = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), @"Data\Resources\ScriptTemplates", fileName);
+			DefaultFile = Path.Combine(@"%APPDATA%\Unity\com.vmp1r3.script-template-editor\bak", fileName);
+			Content = File.ReadAllText(FileName);
 			UserEdits = Content;
+			
+			if (File.Exists(DefaultFile))
+				return;
+			
+			if (!Directory.Exists(Path.GetDirectoryName(DefaultFile)))
+				Directory.CreateDirectory(Path.GetDirectoryName(DefaultFile));
+
+			File.WriteAllText(DefaultFile, Content);
 		}
 
 		public string Icon { get; }
 		public string Name { get; }
-		public string Path { get; }
-		public string Content { get; }
+		public string FileName { get; }
+		public string DefaultFile { get; }
+		public string Content { get; set; }
 		public string UserEdits { get; set; }
 		public bool IsDirty => Content != UserEdits;
-
+		
+		public void Open()
+		{
+			Process.Start(FileName);
+		}
 		[PrincipalPermission(SecurityAction.Demand, Role = @"BUILTIN\Administrators")]
-		public void Save() => File.WriteAllText(Path, UserEdits);
-		public void Open() => Process.Start(Path);
+		public void Save()
+		{	
+			File.WriteAllText(FileName, UserEdits);
+			Content = File.ReadAllText(FileName);
+		}
+		public void Reset()
+		{
+			Content = UserEdits = File.ReadAllText(DefaultFile);
+			Save();
+		}
 	}
 
 	public static class ScriptTemplateEditorWindow
@@ -93,14 +115,18 @@ namespace vmp1r3.ScriptTemplate.Editor
 
 							GUILayout.Space(4);
 							GUILayout.BeginHorizontal();
-							GUILayout.FlexibleSpace();
 							{
+								if (GUILayout.Button("Reset to Default", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
+									target.Reset();
+
+								GUILayout.FlexibleSpace();
 								if (GUILayout.Button("Open...", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
 									target.Open();
 
 								GUI.enabled = target.IsDirty;
 								if (GUILayout.Button("Save", EditorStyles.miniButton, GUILayout.ExpandWidth(false)))
 									target.Save();
+
 								GUI.enabled = true;
 							}
 							GUILayout.Space(8);
