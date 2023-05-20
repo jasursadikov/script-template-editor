@@ -16,7 +16,7 @@ To customize your script templates, go to **"Edit/Preferences/Script Templates"*
 ## How to use?
 
 1. Open **"Edit/Preferences"**
-2. Find **""Script Templates""**
+2. Find **"Script Templates"**
 3. Choose script template that you want to edit
 4. Press **"Save"**
 5. To restore to default values, press **"Reset to Default"**
