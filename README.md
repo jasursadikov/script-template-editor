@@ -4,7 +4,7 @@ Allows you to customize Unity's default script templates.
 
 To customize your script templates, go to **"Edit/Preferences/Script Templates"**
 
-![Preferences](https://github.com/vmp1r3/script-template-editor/blob/master/Images~/img.png)
+![Preferences](https://github.com/jasursadikov/script-template-editor/blob/master/Images~/img.png)
 
 ## How to install?
 
