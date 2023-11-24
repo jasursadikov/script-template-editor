@@ -6,7 +6,7 @@ using UnityEngine;
 
 #pragma warning disable CS0618
 
-namespace vmp1r3.ScriptTemplate.Editor
+namespace JasurSadikov.ScriptTemplate.Editor
 {
 	public static class ScriptTemplateEditor
 	{
