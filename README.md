@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Currently supports only Windows.
+
 # Script Template Editor
 
 Allows you to customize Unity's default script templates.
@@ -10,7 +13,7 @@ To customize your script templates, go to **"Edit/Preferences/Script Templates"*
 
 1. Open **"Windows/Package Manager"**
 2. Click '+' button and press **"Add package from git URI..."**
-3. Paste https://github.com/vmp1r3/script-template-editor.git#master
+3. Paste https://github.com/jasursadikov/script-template-editor.git#master
 4. Press **Enter** and Enjoy!
 
 ## How to use?
